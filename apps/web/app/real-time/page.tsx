@@ -1,7 +1,7 @@
-import { Navigation } from "../components/navigation";
-import { BasicOperationsDemo } from "../components/demos/basic-operations-demo";
+import { Navigation } from "../../components/navigation";
+import { RealTimeUpdatesDemo } from "../../components/demos/real-time-updates-demo";
 
-export default function Home() {
+export default function RealTimePage() {
   return (
     <div className="min-h-screen bg-base-100">
       <div className="container mx-auto px-4 py-8">
@@ -23,7 +23,7 @@ export default function Home() {
 
         {/* Main Content */}
         <main className="mt-8">
-          <BasicOperationsDemo />
+          <RealTimeUpdatesDemo />
         </main>
       </div>
     </div>

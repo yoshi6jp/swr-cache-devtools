@@ -1,0 +1,74 @@
+{
+  "name": "swr-cache-devtools",
+  "version": "0.1.0",
+  "description": "Developer tools for SWR cache visualization and debugging",
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "swr",
+    "cache",
+    "devtools",
+    "react",
+    "developer-tools",
+    "debugging"
+  ],
+  "author": "Yoshiharu Kamata",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yoshi6jp/swr-cache-devtools",
+    "directory": "packages/swr-cache-devtools"
+  },
+  "bugs": {
+    "url": "https://github.com/yoshi6jp/swr-cache-devtools/issues"
+  },
+  "homepage": "https://github.com/yoshi6jp/swr-cache-devtools#readme",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
+  "files": [
+    "src",
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "lint": "eslint . --max-warnings 0",
+    "check-types": "tsc --noEmit",
+    "prepublishOnly": "pnpm build && pnpm check-types && pnpm lint"
+  },
+  "peerDependencies": {
+    "react": ">=17.0.0",
+    "swr": ">=2.0.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.31.0",
+    "@types/node": "^22.15.3",
+    "@types/react": ">=17.0.0",
+    "@typescript-eslint/eslint-plugin": "^8.39.1",
+    "@typescript-eslint/parser": "^8.39.1",
+    "eslint": "^9.31.0",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "swr": "^2.3.0",
+    "tsup": "^8.5.0",
+    "typescript": "5.8.2"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "dependencies": {
+    "@uiw/react-json-view": "1"
+  }
+}
