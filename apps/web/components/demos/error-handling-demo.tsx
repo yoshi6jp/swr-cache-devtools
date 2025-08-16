@@ -20,16 +20,15 @@ const errorFetcher = async (url: string) => {
 
   // 特定のケースでエラーをシミュレート
   if (url.includes("error-500")) {
-    throw new Error("サーバーエラー (500)");
+    throw new Error("Server Error (500)");
   }
   if (url.includes("error-404")) {
-    throw new Error("リソースが見つかりません (404)");
+    throw new Error("Resource Not Found (404)");
   }
   if (url.includes("error-timeout")) {
     await new Promise((resolve) => setTimeout(resolve, 5000)); // タイムアウトシミュレーション
-    throw new Error("リクエストタイムアウト");
+    throw new Error("Request Timeout");
   }
-
   if (!response.ok) {
     throw new Error(`HTTP ${response.status}: ${response.statusText}`);
   }
@@ -42,15 +41,15 @@ export function ErrorHandlingDemo() {
   const [retryAttempts, setRetryAttempts] = useState(0);
 
   const endpoints = [
-    { value: "normal", label: "正常なエンドポイント", path: "/api/data" },
-    { value: "error-500", label: "500エラー", path: "/api/data/error-500" },
-    { value: "error-404", label: "404エラー", path: "/api/data/error-404" },
+    { value: "normal", label: "Normal Endpoint", path: "/api/data" },
+    { value: "error-500", label: "500 Error", path: "/api/data/error-500" },
+    { value: "error-404", label: "404 Error", path: "/api/data/error-404" },
     {
       value: "error-timeout",
-      label: "タイムアウト",
+      label: "Timeout Error",
       path: "/api/data/error-timeout",
     },
-    { value: "network", label: "ネットワークエラー", path: "/api/nonexistent" },
+    { value: "network", label: "Network Error", path: "/api/nonexistent" },
   ];
 
   const currentEndpoint = endpoints.find((ep) => ep.value === selectedEndpoint);
@@ -66,7 +65,7 @@ export function ErrorHandlingDemo() {
     errorRetryInterval: 1000,
     shouldRetryOnError: true,
     onError: (error, key) => {
-      console.log(`エラー発生 [${key}]:`, error.message);
+      console.log(`Error occurred [${key}]:`, error.message);
     },
   });
 
@@ -84,7 +83,7 @@ export function ErrorHandlingDemo() {
       return error.message.includes("500");
     },
     onErrorRetry: (error, key, config, revalidate, { retryCount }) => {
-      console.log(`リトライ ${retryCount}回目:`, error.message);
+      console.log(`Retry attempt ${retryCount}:`, error.message);
 
       // 最大リトライ回数に達した場合
       if (retryCount >= retryAttempts) return;
@@ -106,7 +105,7 @@ export function ErrorHandlingDemo() {
   } = useSWR(`${currentEndpoint?.path}/fallback`, errorFetcher, {
     fallback: {
       [`${currentEndpoint?.path}/fallback`]: {
-        message: "フォールバックデータ",
+        message: "Fallback Data",
         timestamp: new Date().toISOString(),
         isFallback: true,
       },
@@ -157,7 +156,7 @@ export function ErrorHandlingDemo() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="label">
-                <span className="label-text">テストするエンドポイント</span>
+                <span className="label-text">Test Endpoint</span>
               </label>
               <Select
                 value={selectedEndpoint}
@@ -174,17 +173,17 @@ export function ErrorHandlingDemo() {
 
             <div>
               <label className="label">
-                <span className="label-text">カスタムリトライ回数</span>
+                <span className="label-text">Custom Retry Count</span>
               </label>
               <Select
                 value={retryAttempts.toString()}
                 onChange={(e) => setRetryAttempts(Number(e.target.value))}
                 className="w-full"
               >
-                <option value="0">リトライなし</option>
-                <option value="1">1回</option>
-                <option value="3">3回</option>
-                <option value="5">5回</option>
+                <option value="0">No Retry</option>
+                <option value="1">1 Time</option>
+                <option value="3">3 Times</option>
+                <option value="5">5 Times</option>
               </Select>
             </div>
           </div>
@@ -196,11 +195,11 @@ export function ErrorHandlingDemo() {
               className="gap-2"
             >
               <FaArrowsRotate />
-              全データ再取得
+              Refresh All Data
             </Button>
 
             <Badge color="warning" size="lg">
-              現在のテスト: {currentEndpoint?.label}
+              Current Test: {currentEndpoint?.label}
             </Badge>
           </div>
         </div>
@@ -228,7 +227,7 @@ export function ErrorHandlingDemo() {
               {basicLoading && (
                 <div className="flex justify-center py-4">
                   <Loading variant="dots" size="md" />
-                  <span className="ml-2 text-sm">データを取得中...</span>
+                  <span className="ml-2 text-sm">Fetching data...</span>
                 </div>
               )}
 
@@ -236,7 +235,7 @@ export function ErrorHandlingDemo() {
                 <div className="alert alert-error">
                   <FaTriangleExclamation />
                   <div>
-                    <div className="font-bold">エラーが発生しました</div>
+                    <div className="font-bold">Error Occurred</div>
                     <div className="text-sm">{basicError.message}</div>
                   </div>
                 </div>
@@ -246,12 +245,12 @@ export function ErrorHandlingDemo() {
                 <div className="bg-success/10 border border-success/20 p-3 rounded">
                   <div className="flex items-center gap-2 mb-2">
                     <FaCheck className="text-success" />
-                    <span className="font-medium text-success">取得成功</span>
+                    <span className="font-medium text-success">Success</span>
                   </div>
                   <div className="text-sm">
-                    <div>メッセージ: {basicData.message}</div>
+                    <div>Message: {basicData.message}</div>
                     <div>
-                      タイムスタンプ:{" "}
+                      Timestamp:{" "}
                       {new Date(basicData.timestamp).toLocaleTimeString()}
                     </div>
                   </div>
@@ -276,17 +275,17 @@ export function ErrorHandlingDemo() {
             <div className="space-y-3">
               <div className="text-sm">
                 <Badge color="warning" size="sm">
-                  リトライ: {retryAttempts}回
+                  Retry: {retryAttempts} times
                 </Badge>
                 <Badge color="warning" size="sm" className="ml-1">
-                  指数バックオフ
+                  Exponential Backoff
                 </Badge>
               </div>
 
               {customRetryLoading && (
                 <div className="flex justify-center py-4">
                   <Loading variant="dots" size="md" />
-                  <span className="ml-2 text-sm">リトライ実行中...</span>
+                  <span className="ml-2 text-sm">Retrying...</span>
                 </div>
               )}
 
@@ -294,7 +293,7 @@ export function ErrorHandlingDemo() {
                 <div className="alert alert-warning">
                   <FaTriangleExclamation />
                   <div>
-                    <div className="font-bold">リトライ後もエラー</div>
+                    <div className="font-bold">Error After Retry</div>
                     <div className="text-sm">{customRetryError.message}</div>
                   </div>
                 </div>
@@ -305,13 +304,13 @@ export function ErrorHandlingDemo() {
                   <div className="flex items-center gap-2 mb-2">
                     <FaCheck className="text-success" />
                     <span className="font-medium text-success">
-                      リトライ成功
+                      Retry Success
                     </span>
                   </div>
                   <div className="text-sm">
-                    <div>メッセージ: {customRetryData.message}</div>
+                    <div>Message: {customRetryData.message}</div>
                     <div>
-                      タイムスタンプ:{" "}
+                      Timestamp:{" "}
                       {new Date(customRetryData.timestamp).toLocaleTimeString()}
                     </div>
                   </div>
@@ -335,14 +334,14 @@ export function ErrorHandlingDemo() {
                   shouldRetryOnError: false
                 </Badge>
                 <Badge color="secondary" size="sm" className="ml-1">
-                  fallback有効
+                  Fallback Enabled
                 </Badge>
               </div>
 
               {fallbackLoading && (
                 <div className="flex justify-center py-4">
                   <Loading variant="dots" size="md" />
-                  <span className="ml-2 text-sm">フォールバック取得中...</span>
+                  <span className="ml-2 text-sm">Loading fallback...</span>
                 </div>
               )}
 
@@ -366,19 +365,19 @@ export function ErrorHandlingDemo() {
                       className={`font-medium ${fallbackData.isFallback ? "text-secondary" : "text-success"}`}
                     >
                       {fallbackData.isFallback
-                        ? "フォールバックデータ"
-                        : "正常データ"}
+                        ? "Fallback Data"
+                        : "Normal Data"}
                     </span>
                   </div>
                   <div className="text-sm">
-                    <div>メッセージ: {fallbackData.message}</div>
+                    <div>Message: {fallbackData.message}</div>
                     <div>
-                      タイムスタンプ:{" "}
+                      Timestamp:{" "}
                       {new Date(fallbackData.timestamp).toLocaleTimeString()}
                     </div>
                     {fallbackData.isFallback && (
                       <div className="text-secondary mt-1">
-                        ※ これはフォールバックデータです
+                        ※ This is fallback data
                       </div>
                     )}
                   </div>
@@ -389,7 +388,7 @@ export function ErrorHandlingDemo() {
                 <div className="alert alert-error">
                   <FaTriangleExclamation />
                   <div>
-                    <div className="font-bold">フォールバックも失敗</div>
+                    <div className="font-bold">Fallback Failed</div>
                     <div className="text-sm">{fallbackError.message}</div>
                   </div>
                 </div>
@@ -407,11 +406,11 @@ export function ErrorHandlingDemo() {
             How to Use This Demo
           </h5>
           <ul className="text-sm space-y-1 text-base-content/80">
-            <li>• 異なるエンドポイントを選択して各種エラーケースをテスト</li>
-            <li>• リトライ回数を変更してリトライ戦略の違いを確認</li>
-            <li>• DevToolsでエラー状態のキャッシュとリトライの様子を観察</li>
+            <li>• Select different endpoints to test various error cases</li>
+            <li>• Change retry count to see different retry strategies</li>
+            <li>• Observe error states and retry behavior in DevTools</li>
             <li>
-              • フォールバック機能によるグレースフルデグラデーションを体験
+              • Experience graceful degradation with fallback functionality
             </li>
           </ul>
         </div>

@@ -15,6 +15,13 @@ export default function Home() {
               Explore various SWR usage patterns and cache behaviors in this
               interactive demo application
             </p>
+            <div className="mt-4 p-3 bg-info/10 rounded-lg border border-info/20">
+              <p className="text-sm">
+                💡 <strong>Tip:</strong> Use the DevTools Settings above to
+                customize the DevTools panel position, theme, and size. Then
+                click the floating button to open the cache inspector.
+              </p>
+            </div>
           </div>
         </header>
 

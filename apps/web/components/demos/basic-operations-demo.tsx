@@ -2,19 +2,10 @@
 
 import { useState } from "react";
 import useSWR from "swr";
-import { Button, Card, Badge, Loading } from "rsc-daisyui";
-import {
-  FaUser,
-  FaUsers,
-  FaPlay,
-  FaArrowsRotate,
-  FaTrash,
-  FaCheck,
-  FaSpinner,
-} from "react-icons/fa6";
-
-// Simple fetcher function for API calls
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
+import { Card, Badge, Loading } from "rsc-daisyui";
+import { FaUser, FaUsers, FaPlay, FaCheck } from "react-icons/fa6";
+import { fetcher } from "../../utils/fetcher";
+import { UsersResponse, UserResponse } from "../../types/api";
 
 export function BasicOperationsDemo() {
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
@@ -24,29 +15,17 @@ export function BasicOperationsDemo() {
     data: users,
     error: usersError,
     isLoading: usersLoading,
-    mutate: mutateUsers,
-  } = useSWR("/api/users", fetcher);
+  } = useSWR<UsersResponse>("/api/users", fetcher);
 
   // Conditional fetching
   const {
     data: user,
     error: userError,
     isLoading: userLoading,
-    mutate: mutateUser,
-  } = useSWR(selectedUserId ? `/api/users/${selectedUserId}` : null, fetcher);
-
-  const handleRefreshUsers = () => {
-    mutateUsers();
-  };
-
-  const handleRefreshUser = () => {
-    mutateUser();
-  };
-
-  const handleClearUserCache = () => {
-    mutateUser(undefined, { revalidate: false });
-    setSelectedUserId(null);
-  };
+  } = useSWR<UserResponse>(
+    selectedUserId ? `/api/users/${selectedUserId}` : null,
+    fetcher
+  );
 
   return (
     <div className="space-y-6">
@@ -68,23 +47,6 @@ export function BasicOperationsDemo() {
                 SWR Key: /api/users
               </Badge>
             </h4>
-
-            <div className="flex gap-2 mb-4">
-              <Button
-                size="sm"
-                color="primary"
-                onClick={handleRefreshUsers}
-                disabled={usersLoading}
-                className="gap-2"
-              >
-                {usersLoading ? (
-                  <FaSpinner className="animate-spin" />
-                ) : (
-                  <FaArrowsRotate />
-                )}
-                Refetch
-              </Button>
-            </div>
 
             {usersError && (
               <div className="alert alert-error">
@@ -165,32 +127,6 @@ export function BasicOperationsDemo() {
 
             {selectedUserId && (
               <>
-                <div className="flex gap-2 mb-4">
-                  <Button
-                    size="sm"
-                    color="success"
-                    onClick={handleRefreshUser}
-                    disabled={userLoading}
-                    className="gap-2"
-                  >
-                    {userLoading ? (
-                      <FaSpinner className="animate-spin" />
-                    ) : (
-                      <FaArrowsRotate />
-                    )}
-                    Refetch
-                  </Button>
-                  <Button
-                    size="sm"
-                    color="error"
-                    onClick={handleClearUserCache}
-                    className="gap-2"
-                  >
-                    <FaTrash />
-                    Clear Cache
-                  </Button>
-                </div>
-
                 {userError && (
                   <div className="alert alert-error">
                     <span>Error: {userError.message}</span>
@@ -256,9 +192,13 @@ export function BasicOperationsDemo() {
           </h5>
           <ul className="text-sm space-y-1 text-base-content/80">
             <li>• Click any user from the list to view their details</li>
-            <li>• Use &quot;Refetch&quot; button to revalidate SWR cache</li>
-            <li>• Use &quot;Clear Cache&quot; button to delete cache</li>
-            <li>• Check cache state changes in DevTools</li>
+            <li>• Observe conditional fetching behavior based on selection</li>
+            <li>
+              • Check cache state changes and data revalidation in DevTools
+            </li>
+            <li>
+              • DevTools provides comprehensive cache management functionality
+            </li>
           </ul>
         </div>
       </Card>

@@ -13,9 +13,8 @@ import {
   FaClock,
   FaMessage,
 } from "react-icons/fa6";
-
-// Simple fetcher function for API calls
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
+import { fetcher } from "../../utils/fetcher";
+import { LiveData, Message } from "../../types/api";
 
 export function RealTimeUpdatesDemo() {
   const [isPolling, setIsPolling] = useState(false);
@@ -28,7 +27,7 @@ export function RealTimeUpdatesDemo() {
     data: liveData,
     error: liveError,
     isLoading: liveLoading,
-  } = useSWR("/api/live-data", fetcher, {
+  } = useSWR<LiveData>("/api/live-data", fetcher, {
     refreshInterval: isPolling ? 2000 : 0, // 2秒ごとに更新
     revalidateOnFocus: true,
     revalidateOnReconnect: true,
@@ -40,7 +39,7 @@ export function RealTimeUpdatesDemo() {
     error: messagesError,
     isLoading: messagesLoading,
     mutate: mutateMessages,
-  } = useSWR("/api/messages", fetcher, {
+  } = useSWR<Message[]>("/api/messages", fetcher, {
     refreshInterval: 3000, // 3秒ごとに更新
   });
 
@@ -241,29 +240,22 @@ export function RealTimeUpdatesDemo() {
               {/* Messages List */}
               {messages && Array.isArray(messages) && (
                 <div className="space-y-2 max-h-64 overflow-y-auto bg-base-200 p-3 rounded">
-                  {messages.map(
-                    (msg: {
-                      id: number;
-                      text: string;
-                      timestamp: string;
-                      user: string;
-                    }) => (
-                      <div
-                        key={msg.id}
-                        className="bg-base-100 p-2 rounded text-sm"
-                      >
-                        <div className="flex justify-between items-start">
-                          <span className="font-medium text-primary">
-                            {msg.user}
-                          </span>
-                          <span className="text-xs text-base-content/50">
-                            {new Date(msg.timestamp).toLocaleTimeString()}
-                          </span>
-                        </div>
-                        <div className="mt-1">{msg.text}</div>
+                  {messages.map((msg) => (
+                    <div
+                      key={msg.id}
+                      className="bg-base-100 p-2 rounded text-sm"
+                    >
+                      <div className="flex justify-between items-start">
+                        <span className="font-medium text-primary">
+                          {msg.user || "Unknown"}
+                        </span>
+                        <span className="text-xs text-base-content/50">
+                          {new Date(msg.timestamp).toLocaleTimeString()}
+                        </span>
                       </div>
-                    )
-                  )}
+                      <div className="mt-1">{msg.text}</div>
+                    </div>
+                  ))}
                 </div>
               )}
             </div>

@@ -2,11 +2,10 @@
 
 import { useState, useMemo } from "react";
 import useSWR from "swr";
-import { Button, Card, Badge, Loading, Input, Checkbox } from "rsc-daisyui";
+import { Card, Badge, Loading, Input, Checkbox } from "rsc-daisyui";
 import {
   FaGears,
   FaPlay,
-  FaArrowsRotate,
   FaSpinner,
   FaEye,
   FaEyeSlash,
@@ -14,9 +13,8 @@ import {
   FaLinkSlash,
   FaCube,
 } from "react-icons/fa6";
-
-// Simple fetcher function for API calls
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
+import { fetcher } from "../../utils/fetcher";
+import { User, Post, Settings } from "../../types/api";
 
 export function AdvancedFeaturesDemo() {
   const [userId, setUserId] = useState("");
@@ -29,8 +27,7 @@ export function AdvancedFeaturesDemo() {
     data: user,
     error: userError,
     isLoading: userLoading,
-    mutate: mutateUser,
-  } = useSWR(
+  } = useSWR<User>(
     enableUserFetch && userId ? `/api/users/${userId}` : null,
     fetcher,
     {
@@ -44,8 +41,7 @@ export function AdvancedFeaturesDemo() {
     data: userPosts,
     error: postsError,
     isLoading: postsLoading,
-    mutate: mutatePosts,
-  } = useSWR(
+  } = useSWR<Post[]>(
     enableDependentFetch && user?.id ? `/api/users/${user.id}/posts` : null,
     fetcher
   );
@@ -59,8 +55,7 @@ export function AdvancedFeaturesDemo() {
     data: settings,
     error: settingsError,
     isLoading: settingsLoading,
-    mutate: mutateSettings,
-  } = useSWR(`/api/settings?type=${searchQuery}`, fetcher, {
+  } = useSWR<Settings>(`/api/settings?type=${searchQuery}`, fetcher, {
     dedupingInterval: 60000, // 1分間は重複リクエストを防ぐ
     revalidateOnMount: true,
   });
@@ -70,17 +65,11 @@ export function AdvancedFeaturesDemo() {
     data: compareData,
     error: compareError,
     isLoading: compareLoading,
-  } = useSWR("/api/settings?type=public", fetcher, {
+  } = useSWR<Settings>("/api/settings?type=public", fetcher, {
     refreshInterval: 0,
     revalidateOnFocus: false,
     revalidateOnReconnect: false,
   });
-
-  const handleRefreshAll = () => {
-    mutateUser();
-    mutatePosts();
-    mutateSettings();
-  };
 
   const currentUserKey =
     enableUserFetch && userId ? `/api/users/${userId}` : null;
@@ -110,12 +99,12 @@ export function AdvancedFeaturesDemo() {
             <div className="space-y-3">
               <div>
                 <label className="label">
-                  <span className="label-text">ユーザーID</span>
+                  <span className="label-text">User ID</span>
                 </label>
                 <Input
                   value={userId}
                   onChange={(e) => setUserId(e.target.value)}
-                  placeholder="例: 1, 2, 3..."
+                  placeholder="e.g: 1, 2, 3..."
                   className="w-full"
                 />
               </div>
@@ -124,7 +113,7 @@ export function AdvancedFeaturesDemo() {
                 <label className="label cursor-pointer">
                   <span className="label-text flex items-center gap-2">
                     {enableUserFetch ? <FaEye /> : <FaEyeSlash />}
-                    ユーザー情報を取得
+                    Enable User Fetch
                   </span>
                   <Checkbox
                     checked={enableUserFetch}
@@ -137,7 +126,7 @@ export function AdvancedFeaturesDemo() {
                 <label className="label cursor-pointer">
                   <span className="label-text flex items-center gap-2">
                     {enableDependentFetch ? <FaLink /> : <FaLinkSlash />}
-                    依存データを取得
+                    Enable Dependent Fetch
                   </span>
                   <Checkbox
                     checked={enableDependentFetch}
@@ -150,26 +139,17 @@ export function AdvancedFeaturesDemo() {
             <div className="space-y-3">
               <div className="form-control">
                 <label className="label cursor-pointer">
-                  <span className="label-text">機密データ表示</span>
+                  <span className="label-text">Show Sensitive Data</span>
                   <Checkbox
                     checked={showSensitiveData}
                     onChange={(e) => setShowSensitiveData(e.target.checked)}
                   />
                 </label>
               </div>
-
-              <Button
-                color="primary"
-                onClick={handleRefreshAll}
-                className="gap-2 w-full"
-              >
-                <FaArrowsRotate />
-                全データ更新
-              </Button>
             </div>
           </div>
 
-          <div className="divider">アクティブなSWRキー</div>
+          <div className="divider">Active SWR Keys</div>
 
           <div className="space-y-2">
             <div className="flex items-center gap-2">
@@ -177,7 +157,7 @@ export function AdvancedFeaturesDemo() {
                 {currentUserKey ? "ACTIVE" : "INACTIVE"}
               </Badge>
               <span className="text-sm font-mono">
-                {currentUserKey || "ユーザーフェッチが無効"}
+                {currentUserKey || "User fetch disabled"}
               </span>
             </div>
 
@@ -186,7 +166,7 @@ export function AdvancedFeaturesDemo() {
                 {currentPostsKey ? "ACTIVE" : "INACTIVE"}
               </Badge>
               <span className="text-sm font-mono">
-                {currentPostsKey || "依存フェッチが無効または待機中"}
+                {currentPostsKey || "Dependent fetch disabled or waiting"}
               </span>
             </div>
 
@@ -212,20 +192,20 @@ export function AdvancedFeaturesDemo() {
             {!enableUserFetch && (
               <div className="text-center py-8 text-base-content/50">
                 <FaEyeSlash className="w-12 h-12 mx-auto mb-4" />
-                <p>フェッチが無効です</p>
+                <p>Fetch disabled</p>
               </div>
             )}
 
             {enableUserFetch && !userId && (
               <div className="text-center py-8 text-base-content/50">
                 <FaCube className="w-12 h-12 mx-auto mb-4" />
-                <p>ユーザーIDを入力してください</p>
+                <p>Please enter a User ID</p>
               </div>
             )}
 
             {userError && (
               <div className="alert alert-error">
-                <span>エラー: {userError.message}</span>
+                <span>Error: {userError.message}</span>
               </div>
             )}
 
@@ -238,11 +218,11 @@ export function AdvancedFeaturesDemo() {
             {user && (
               <div className="space-y-3">
                 <div className="bg-base-200 p-3 rounded">
-                  <div className="text-sm font-medium">名前</div>
+                  <div className="text-sm font-medium">Name</div>
                   <div>{user.name}</div>
                 </div>
                 <div className="bg-base-200 p-3 rounded">
-                  <div className="text-sm font-medium">メール</div>
+                  <div className="text-sm font-medium">Email</div>
                   <div>{user.email}</div>
                 </div>
               </div>
@@ -261,20 +241,20 @@ export function AdvancedFeaturesDemo() {
             {!enableDependentFetch && (
               <div className="text-center py-8 text-base-content/50">
                 <FaLinkSlash className="w-12 h-12 mx-auto mb-4" />
-                <p>依存フェッチが無効です</p>
+                <p>Dependent fetch disabled</p>
               </div>
             )}
 
             {enableDependentFetch && !user && (
               <div className="text-center py-8 text-base-content/50">
                 <FaSpinner className="w-12 h-12 mx-auto mb-4" />
-                <p>ユーザーデータを待機中...</p>
+                <p>Waiting for user data...</p>
               </div>
             )}
 
             {postsError && (
               <div className="alert alert-error">
-                <span>エラー: {postsError.message}</span>
+                <span>Error: {postsError.message}</span>
               </div>
             )}
 
@@ -300,7 +280,7 @@ export function AdvancedFeaturesDemo() {
                   ))}
                 {userPosts.length > 3 && (
                   <div className="text-center text-sm text-base-content/50">
-                    他 {userPosts.length - 3} 件...
+                    {userPosts.length - 3} more items...
                   </div>
                 )}
               </div>
@@ -319,17 +299,17 @@ export function AdvancedFeaturesDemo() {
             <div className="space-y-4">
               <div>
                 <div className="text-sm font-medium mb-2">
-                  動的キー (deduping有効)
+                  Dynamic Key (deduping enabled)
                 </div>
                 {settingsLoading && (
                   <FaSpinner className="animate-spin w-4 h-4" />
                 )}
                 {settingsError && (
-                  <div className="text-error text-sm">エラー</div>
+                  <div className="text-error text-sm">Error</div>
                 )}
                 {settings && (
                   <div className="bg-base-200 p-2 rounded text-sm">
-                    設定数: {settings.count} | タイプ: {settings.type}
+                    Count: {settings.count} | Type: {settings.type}
                   </div>
                 )}
               </div>
@@ -338,17 +318,17 @@ export function AdvancedFeaturesDemo() {
 
               <div>
                 <div className="text-sm font-medium mb-2">
-                  静的キー (自動更新無効)
+                  Static Key (auto-update disabled)
                 </div>
                 {compareLoading && (
                   <FaSpinner className="animate-spin w-4 h-4" />
                 )}
                 {compareError && (
-                  <div className="text-error text-sm">エラー</div>
+                  <div className="text-error text-sm">Error</div>
                 )}
                 {compareData && (
                   <div className="bg-base-200 p-2 rounded text-sm">
-                    設定数: {compareData.count} | タイプ: {compareData.type}
+                    Count: {compareData.count} | Type: {compareData.type}
                   </div>
                 )}
               </div>
@@ -366,18 +346,20 @@ export function AdvancedFeaturesDemo() {
           </h5>
           <ul className="text-sm space-y-1 text-base-content/80">
             <li>
-              •
-              ユーザーIDを入力してフェッチを有効にすると条件付きフェッチが動作します
+              • Enter User ID and enable fetch to see conditional fetching in
+              action
             </li>
             <li>
-              • 依存フェッチはユーザーデータが取得された後に自動的に実行されます
+              • Dependent fetch automatically executes after user data is
+              retrieved
             </li>
             <li>
-              • 機密データ表示を切り替えると異なるキーでキャッシュが管理されます
+              • Toggle sensitive data display to see different cache keys in
+              action
             </li>
             <li>
-              •
-              DevToolsで各キーの状態とSWR設定オプションの効果を確認してください
+              • Check DevTools to observe key states and SWR configuration
+              effects
             </li>
           </ul>
         </div>

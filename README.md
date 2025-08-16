@@ -1,135 +1,181 @@
-# Turborepo starter
+# SWR Cache DevTools
 
-This Turborepo starter is maintained by the Turborepo core team.
+[![npm version](https://badge.fury.io/js/swr-cache-devtools.svg)](https://badge.fury.io/js/swr-cache-devtools)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-## Using this example
+Developer tools for SWR cache visualization and debugging in React applications.
 
-Run the following command:
+## Features
 
-```sh
-npx create-turbo@latest
+- 🔍 **Cache Visualization**: View and explore your SWR cache data in real-time
+- 🎨 **JSON Editor**: Edit cache values directly in the DevTools interface
+- 🌗 **Theme Support**: Light, dark, and auto themes
+- 📱 **Flexible Positioning**: Position the DevTools panel anywhere on your screen
+- ⚡ **Zero Configuration**: Works out of the box with any SWR setup
+
+## Installation
+
+```bash
+npm install swr-cache-devtools
+# or
+yarn add swr-cache-devtools
+# or
+pnpm add swr-cache-devtools
 ```
 
-## What's inside?
+## Usage
 
-This Turborepo includes the following packages/apps:
+Simply import and add the `SwrCacheDevTools` component to your React application:
 
-### Apps and Packages
+```jsx
+import { SwrCacheDevTools } from "swr-cache-devtools";
 
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
-
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
-
-### Utilities
-
-This Turborepo has some additional tools already setup for you:
-
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
-
-### Build
-
-To build all apps and packages, run the following command:
-
-```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build
-yarn dlx turbo build
-pnpm exec turbo build
+function App() {
+  return (
+    <div>
+      {/* Your app content */}
+      <SwrCacheDevTools />
+    </div>
+  );
+}
 ```
 
-You can build a specific package by using a [filter](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters):
+### With Custom Configuration
 
-```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build --filter=docs
+```jsx
+import { SwrCacheDevTools } from "swr-cache-devtools";
 
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build --filter=docs
-yarn exec turbo build --filter=docs
-pnpm exec turbo build --filter=docs
-```
-
-### Develop
-
-To develop all apps and packages, run the following command:
-
-```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev
-yarn exec turbo dev
-pnpm exec turbo dev
+function App() {
+  return (
+    <div>
+      {/* Your app content */}
+      <SwrCacheDevTools
+        position="bottom-right"
+        theme="dark"
+        defaultOpen={false}
+        maxHeight={400}
+        maxWidth={600}
+      />
+    </div>
+  );
+}
 ```
 
-You can develop a specific package by using a [filter](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters):
+## Props
 
-```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev --filter=web
+| Prop          | Type                                                           | Default          | Description                         |
+| ------------- | -------------------------------------------------------------- | ---------------- | ----------------------------------- |
+| `position`    | `"top-left" \| "top-right" \| "bottom-left" \| "bottom-right"` | `"bottom-right"` | Position of the DevTools panel      |
+| `theme`       | `"light" \| "dark" \| "auto"`                                  | `"auto"`         | Color theme                         |
+| `defaultOpen` | `boolean`                                                      | `false`          | Whether the panel starts open       |
+| `maxHeight`   | `number`                                                       | `400`            | Maximum height of the panel         |
+| `maxWidth`    | `number`                                                       | `600`            | Maximum width of the panel          |
+| `className`   | `string`                                                       | -                | Custom CSS class for the container  |
+| `style`       | `React.CSSProperties`                                          | -                | Custom styles for the container     |
+| `buttonStyle` | `React.CSSProperties`                                          | -                | Custom styles for the toggle button |
+| `panelStyle`  | `React.CSSProperties`                                          | -                | Custom styles for the panel         |
 
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev --filter=web
-yarn exec turbo dev --filter=web
-pnpm exec turbo dev --filter=web
-```
+## Development Mode Only
 
-### Remote Caching
+It's recommended to only include the DevTools in development mode:
 
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
+```jsx
+import { SwrCacheDevTools } from "swr-cache-devtools";
 
-Turborepo can use a technique known as [Remote Caching](https://turborepo.com/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
-
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
-
-```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo login
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo login
-yarn exec turbo login
-pnpm exec turbo login
+function App() {
+  return (
+    <div>
+      {/* Your app content */}
+      {process.env.NODE_ENV === "development" && <SwrCacheDevTools />}
+    </div>
+  );
+}
 ```
 
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
+## Demo
 
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
+You can try the DevTools in our interactive demo application:
 
+- [Live Demo](https://swr-cache-devtools.vercel.app)
+- Local development: `pnpm dev --filter=web`
+
+## Project Structure
+
+This repository uses Turborepo for monorepo management:
+
+- `packages/swr-cache-devtools`: Main library package
+- `apps/web`: Demo application showcasing the DevTools
+- `apps/docs`: Documentation website
+
+## Requirements
+
+- React >= 17.0.0
+- SWR >= 2.0.0
+
+## Development
+
+To develop all apps and packages:
+
+```bash
+# Install dependencies
+pnpm install
+
+# Start development mode
+pnpm dev
 ```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo link
 
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo link
-yarn exec turbo link
-pnpm exec turbo link
+To develop specific packages:
+
+```bash
+# Develop the DevTools package
+pnpm dev --filter=swr-cache-devtools
+
+# Develop the demo app
+pnpm dev --filter=web
 ```
 
-## Useful Links
+## Build
 
-Learn more about the power of Turborepo:
+To build all packages:
 
-- [Tasks](https://turborepo.com/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.com/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.com/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.com/docs/reference/configuration)
-- [CLI Usage](https://turborepo.com/docs/reference/command-line-reference)
+```bash
+pnpm build
+```
+
+To build specific packages:
+
+```bash
+# Build the DevTools package
+pnpm build --filter=swr-cache-devtools
+
+# Build the demo app
+pnpm build --filter=web
+```
+
+## Publishing
+
+The main package is automatically published to npm when changes are made to the `packages/swr-cache-devtools` directory.
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## License
+
+MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Author
+
+Yoshiharu Kamata
+
+## Links
+
+- [GitHub Repository](https://github.com/yoshi6jp/swr-cache-devtools)
+- [npm Package](https://www.npmjs.com/package/swr-cache-devtools)
+- [Live Demo](https://swr-cache-devtools.vercel.app)

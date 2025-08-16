@@ -2,16 +2,8 @@
 
 import { useState } from "react";
 import useSWR from "swr";
-import { Button, Card, Badge, Loading, Select } from "rsc-daisyui";
-import {
-  FaList,
-  FaArrowsRotate,
-  FaTrash,
-  FaSpinner,
-  FaFilter,
-  FaPlay,
-  FaMagnifyingGlass,
-} from "react-icons/fa6";
+import { Card, Badge, Loading, Select } from "rsc-daisyui";
+import { FaList, FaFilter, FaPlay, FaMagnifyingGlass } from "react-icons/fa6";
 import { fetcher } from "../../utils/fetcher";
 import {
   ProductsResponse,
@@ -28,7 +20,6 @@ export function ArrayKeysDemo() {
     data: products,
     error: productsError,
     isLoading: productsLoading,
-    mutate: mutateProducts,
   } = useSWR<ProductsResponse>(
     ["/api/products", { category, sortBy, limit }],
     ([url, params]: [string, Record<string, string | number>]) =>
@@ -39,24 +30,10 @@ export function ArrayKeysDemo() {
     data: analytics,
     error: analyticsError,
     isLoading: analyticsLoading,
-    mutate: mutateAnalytics,
   } = useSWR<AnalyticsResponse>(
     `/api/analytics/products/${category}`,
     (url: string) => fetcher<AnalyticsResponse>(url)
   );
-
-  const handleRefreshProducts = () => {
-    mutateProducts();
-  };
-
-  const handleRefreshAnalytics = () => {
-    mutateAnalytics();
-  };
-
-  const handleClearAllCache = () => {
-    mutateProducts(undefined, { revalidate: false });
-    mutateAnalytics(undefined, { revalidate: false });
-  };
 
   const categories = [
     { value: "electronics", label: "Electronics" },
@@ -163,23 +140,6 @@ export function ArrayKeysDemo() {
               Product List
             </h4>
 
-            <div className="flex gap-2 mb-4">
-              <Button
-                size="sm"
-                color="primary"
-                onClick={handleRefreshProducts}
-                disabled={productsLoading}
-                className="gap-2"
-              >
-                {productsLoading ? (
-                  <FaSpinner className="animate-spin" />
-                ) : (
-                  <FaArrowsRotate />
-                )}
-                Refetch
-              </Button>
-            </div>
-
             {productsError && (
               <div className="alert alert-error">
                 <span>Error: {productsError.message}</span>
@@ -228,32 +188,6 @@ export function ArrayKeysDemo() {
               <FaMagnifyingGlass className="w-5 h-5 text-success" />
               Category Analytics
             </h4>
-
-            <div className="flex gap-2 mb-4">
-              <Button
-                size="sm"
-                color="success"
-                onClick={handleRefreshAnalytics}
-                disabled={analyticsLoading}
-                className="gap-2"
-              >
-                {analyticsLoading ? (
-                  <FaSpinner className="animate-spin" />
-                ) : (
-                  <FaArrowsRotate />
-                )}
-                Refetch
-              </Button>
-              <Button
-                size="sm"
-                color="error"
-                onClick={handleClearAllCache}
-                className="gap-2"
-              >
-                <FaTrash />
-                Clear All Cache
-              </Button>
-            </div>
 
             {analyticsError && (
               <div className="alert alert-error">

@@ -114,6 +114,9 @@ importers:
       '@uiw/react-json-view':
         specifier: '1'
         version: 1.12.2(@babel/runtime@7.28.2)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      react-icons:
+        specifier: ^5.5.0
+        version: 5.5.0(react@19.1.0)
     devDependencies:
       '@eslint/js':
         specifier: ^9.31.0
