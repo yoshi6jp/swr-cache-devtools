@@ -71,7 +71,6 @@ function App() {
 | `maxHeight`   | `number`                                                       | `400`            | Maximum height of the panel         |
 | `maxWidth`    | `number`                                                       | `600`            | Maximum width of the panel          |
 | `className`   | `string`                                                       | -                | Custom CSS class for the container  |
-| `style`       | `React.CSSProperties`                                          | -                | Custom styles for the container     |
 | `buttonStyle` | `React.CSSProperties`                                          | -                | Custom styles for the toggle button |
 | `panelStyle`  | `React.CSSProperties`                                          | -                | Custom styles for the panel         |
 

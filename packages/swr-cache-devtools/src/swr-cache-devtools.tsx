@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useCallback, useMemo } from "react";
+import { useSWRConfig } from "swr";
 import { SwrCacheDevToolsProps } from "./types";
 import { getThemeColors, getPanelStyle } from "./styles";
 import { useSwrCache, useEditMode } from "./hooks";
@@ -13,12 +14,14 @@ export const SwrCacheDevTools: React.FC<SwrCacheDevToolsProps> = ({
   maxHeight,
   maxWidth,
   className,
-  style,
   buttonStyle,
   panelStyle,
 }) => {
   const [isOpen, setIsOpen] = useState(defaultOpen);
-  const themeColors = getThemeColors(theme);
+  const { cache } = useSWRConfig();
+
+  // Memoize theme colors calculation
+  const themeColors = useMemo(() => getThemeColors(theme), [theme]);
 
   // SWR Cache management
   const {
@@ -26,11 +29,15 @@ export const SwrCacheDevTools: React.FC<SwrCacheDevToolsProps> = ({
     filteredCacheKeys,
     selectedKey,
     searchTerm,
+    refreshingKeys,
+    isRefreshingAll,
     setSearchTerm,
     getSelectedKeyData,
     getDisplayData,
+    hasError,
     deleteCache,
     refreshCache,
+    refreshCacheList,
     handleKeySelection,
     mutate,
   } = useSwrCache(isOpen);
@@ -50,31 +57,42 @@ export const SwrCacheDevTools: React.FC<SwrCacheDevToolsProps> = ({
     resetForNewKey,
   } = useEditMode();
 
-  // Handle key selection with edit mode reset
-  const handleKeySelectionWithReset = (key: string) => {
-    handleKeySelection(key);
-    resetForNewKey();
-  };
+  // Memoize hasError result
+  const hasErrorResult = useMemo(() => hasError(), [hasError]);
 
-  // Handle edit mode entry
-  const handleEnterEditMode = () => {
+  // Memoized callback functions
+  const handleKeySelectionWithReset = useCallback(
+    (key: string) => {
+      handleKeySelection(key);
+      resetForNewKey();
+    },
+    [handleKeySelection, resetForNewKey]
+  );
+
+  const handleEnterEditMode = useCallback(() => {
     const currentData = getDisplayData();
     enterEditMode(currentData);
-  };
+  }, [getDisplayData, enterEditMode]);
 
-  // Handle apply changes
-  const handleApplyChanges = () => {
+  const handleApplyChanges = useCallback(() => {
     if (selectedKey) {
       applyChanges(selectedKey, mutate);
     }
-  };
+  }, [selectedKey, applyChanges, mutate]);
+
+  const handleOpenPanel = useCallback(() => setIsOpen(true), []);
+
+  const handleClosePanel = useCallback(() => setIsOpen(false), []);
+
+  // Memoize getKeyData function
+  const getKeyData = useCallback((key: string) => cache.get(key), [cache]);
 
   if (!isOpen) {
     return (
       <FloatingButton
         position={position}
         buttonStyle={buttonStyle}
-        onClick={() => setIsOpen(true)}
+        onClick={handleOpenPanel}
       />
     );
   }
@@ -101,13 +119,14 @@ export const SwrCacheDevTools: React.FC<SwrCacheDevToolsProps> = ({
       >
         <h2 style={{ margin: 0, fontSize: "18px" }}>SWR Cache DevTools</h2>
         <button
-          onClick={() => setIsOpen(false)}
+          onClick={handleClosePanel}
           style={{
             background: "none",
             border: "none",
             fontSize: "20px",
             cursor: "pointer",
             color: "inherit",
+            marginRight: "8px",
           }}
         >
           ×
@@ -122,10 +141,14 @@ export const SwrCacheDevTools: React.FC<SwrCacheDevToolsProps> = ({
           filteredCacheKeys={filteredCacheKeys}
           selectedKey={selectedKey}
           searchTerm={searchTerm}
+          refreshingKeys={refreshingKeys}
+          isRefreshingAll={isRefreshingAll}
           onSearchChange={setSearchTerm}
           onKeySelect={handleKeySelectionWithReset}
           onDeleteCache={deleteCache}
           onRefreshCache={refreshCache}
+          onRefreshCacheList={refreshCacheList}
+          getKeyData={getKeyData}
         />
 
         {/* Data display area */}
@@ -134,6 +157,7 @@ export const SwrCacheDevTools: React.FC<SwrCacheDevToolsProps> = ({
           selectedKey={selectedKey}
           cacheData={getSelectedKeyData()}
           displayData={getDisplayData()}
+          hasError={hasErrorResult}
           isEditMode={isEditMode}
           editedData={editedData}
           hasUnsavedChanges={hasUnsavedChanges}

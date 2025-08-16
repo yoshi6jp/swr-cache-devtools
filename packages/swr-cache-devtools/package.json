@@ -1,6 +1,6 @@
 {
   "name": "swr-cache-devtools",
-  "version": "0.2.0",
+  "version": "1.0.0",
   "description": "Developer tools for SWR cache visualization and debugging",
   "publishConfig": {
     "access": "public"

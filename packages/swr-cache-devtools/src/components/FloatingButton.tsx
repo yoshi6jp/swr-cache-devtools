@@ -9,18 +9,18 @@ interface FloatingButtonProps {
   onClick: () => void;
 }
 
-export const FloatingButton: React.FC<FloatingButtonProps> = ({
-  position,
-  buttonStyle,
-  onClick,
-}) => {
-  return (
-    <button
-      style={getButtonPosition(position, buttonStyle)}
-      onClick={onClick}
-      title="Open SWR Cache DevTools"
-    >
-      <SiSwr />
-    </button>
-  );
-};
+export const FloatingButton: React.FC<FloatingButtonProps> = React.memo(
+  ({ position, buttonStyle, onClick }) => {
+    return (
+      <button
+        style={getButtonPosition(position, buttonStyle)}
+        onClick={onClick}
+        title="Open SWR Cache DevTools"
+      >
+        <SiSwr />
+      </button>
+    );
+  }
+);
+
+FloatingButton.displayName = "FloatingButton";

@@ -12,7 +12,6 @@ export interface SwrCacheDevToolsProps {
 
   // Styling
   className?: string;
-  style?: React.CSSProperties;
   buttonStyle?: React.CSSProperties;
   panelStyle?: React.CSSProperties;
 }

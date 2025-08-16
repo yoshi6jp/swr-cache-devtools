@@ -10,54 +10,22 @@ interface EditToolbarProps {
   onApplyChanges: () => void;
 }
 
-export const EditToolbar: React.FC<EditToolbarProps> = ({
-  isEditMode,
-  hasUnsavedChanges,
-  onEnterEditMode,
-  onExitEditMode,
-  onResetChanges,
-  onApplyChanges,
-}) => {
-  return (
-    <div style={{ display: "flex", gap: "8px" }}>
-      {!isEditMode && !hasUnsavedChanges && (
-        <button
-          onClick={onEnterEditMode}
-          style={{
-            padding: "6px 12px",
-            fontSize: "12px",
-            backgroundColor: COLORS.primary,
-            color: "white",
-            border: "none",
-            borderRadius: "4px",
-            cursor: "pointer",
-          }}
-        >
-          Edit Mode
-        </button>
-      )}
-      {isEditMode && (
-        <button
-          onClick={onExitEditMode}
-          style={{
-            padding: "6px 12px",
-            fontSize: "12px",
-            backgroundColor: COLORS.danger,
-            color: "white",
-            border: "none",
-            borderRadius: "4px",
-            cursor: "pointer",
-          }}
-        >
-          Exit Edit
-        </button>
-      )}
-      {!isEditMode && hasUnsavedChanges && (
-        <>
+export const EditToolbar: React.FC<EditToolbarProps> = React.memo(
+  ({
+    isEditMode,
+    hasUnsavedChanges,
+    onEnterEditMode,
+    onExitEditMode,
+    onResetChanges,
+    onApplyChanges,
+  }) => {
+    if (isEditMode) {
+      return (
+        <div style={{ display: "flex", gap: "8px" }}>
           <button
-            onClick={onResetChanges}
+            onClick={onExitEditMode}
             style={{
-              padding: "6px 12px",
+              padding: "4px 8px",
               fontSize: "12px",
               backgroundColor: COLORS.secondary,
               color: "white",
@@ -66,24 +34,61 @@ export const EditToolbar: React.FC<EditToolbarProps> = ({
               cursor: "pointer",
             }}
           >
-            Reset
+            Exit Edit
           </button>
-          <button
-            onClick={onApplyChanges}
-            style={{
-              padding: "6px 12px",
-              fontSize: "12px",
-              backgroundColor: COLORS.success,
-              color: "white",
-              border: "none",
-              borderRadius: "4px",
-              cursor: "pointer",
-            }}
-          >
-            Mutate
-          </button>
-        </>
-      )}
-    </div>
-  );
-};
+          {hasUnsavedChanges && (
+            <>
+              <button
+                onClick={onResetChanges}
+                style={{
+                  padding: "4px 8px",
+                  fontSize: "12px",
+                  backgroundColor: COLORS.warning,
+                  color: "white",
+                  border: "none",
+                  borderRadius: "4px",
+                  cursor: "pointer",
+                }}
+              >
+                Reset
+              </button>
+              <button
+                onClick={onApplyChanges}
+                style={{
+                  padding: "4px 8px",
+                  fontSize: "12px",
+                  backgroundColor: COLORS.success,
+                  color: "white",
+                  border: "none",
+                  borderRadius: "4px",
+                  cursor: "pointer",
+                }}
+              >
+                Apply
+              </button>
+            </>
+          )}
+        </div>
+      );
+    }
+
+    return (
+      <button
+        onClick={onEnterEditMode}
+        style={{
+          padding: "4px 8px",
+          fontSize: "12px",
+          backgroundColor: COLORS.primary,
+          color: "white",
+          border: "none",
+          borderRadius: "4px",
+          cursor: "pointer",
+        }}
+      >
+        Edit Mode
+      </button>
+    );
+  }
+);
+
+EditToolbar.displayName = "EditToolbar";
