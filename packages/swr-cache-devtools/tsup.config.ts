@@ -12,7 +12,4 @@ export default defineConfig({
   treeshake: false, // Disable treeshake to preserve "use client"
   target: "es2018",
   outDir: "dist",
-  banner: {
-    js: '"use client";',
-  },
 });
