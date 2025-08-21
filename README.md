@@ -95,7 +95,7 @@ function App() {
 
 You can try the DevTools in our interactive demo application:
 
-- [Live Demo](https://swr-cache-devtools.vercel.app)
+- [Live Demo](https://swr-cache-devtools-web.vercel.app/)
 - Local development: `pnpm dev --filter=web`
 
 ## Project Structure
@@ -177,4 +177,4 @@ Yoshiharu Kamata
 
 - [GitHub Repository](https://github.com/yoshi6jp/swr-cache-devtools)
 - [npm Package](https://www.npmjs.com/package/swr-cache-devtools)
-- [Live Demo](https://swr-cache-devtools.vercel.app)
+- [Live Demo](https://swr-cache-devtools-web.vercel.app/)
